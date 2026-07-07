@@ -1,0 +1,84 @@
+name: Firefly Guitar Monitor
+
+on:
+
+  schedule:
+    # Runs every 5 minutes
+    - cron: "*/5 * * * *"
+
+  # Allows you to manually start it
+  workflow_dispatch:
+
+
+permissions:
+
+  contents: write
+
+
+
+jobs:
+
+  monitor:
+
+    runs-on: ubuntu-latest
+
+
+    steps:
+
+
+      - name: Download repository
+
+        uses: actions/checkout@v4
+
+
+
+      - name: Setup Python
+
+        uses: actions/setup-python@v5
+
+        with:
+
+          python-version: "3.12"
+
+
+
+      - name: Install dependencies
+
+        run: |
+
+          pip install -r requirements.txt
+
+
+
+      - name: Run Firefly monitor
+
+        env:
+
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+
+          TO_EMAIL: ${{ secrets.TO_EMAIL }}
+
+        run: |
+
+          python monitor.py
+
+
+
+      - name: Save inventory
+
+        run: |
+
+          git config user.name github-actions
+
+          git config user.email github-actions@github.com
+
+
+          git add known_products.json
+
+
+          git commit -m "Update guitar inventory" || exit 0
+
+
+          git push
