@@ -18,15 +18,15 @@ def send_email(products):
     html = """
     <html>
     <body>
-    <h1>🎸 New Firefly Guitar Alert!</h1>
-    """
 
+    <h1>🎸 New Firefly Guitar Alert!</h1>
+
+    """
 
     for product in products:
 
-        image = product.get("image", "")
-
         html += f"""
+
         <hr>
 
         <h2>{product['title']}</h2>
@@ -37,38 +37,44 @@ def send_email(products):
         </p>
 
         <p>
+        Alert:
+        {product.get('alert','NEW GUITAR')}
+        </p>
+
+        <p>
         Price:
         {product.get('price','Unknown')}
         </p>
-
-        <img src="{image}" width="300">
-
-        <br><br>
 
         <a href="{product['url']}">
         View Guitar
         </a>
 
+        <br><br>
+
         """
 
     html += """
+
     </body>
     </html>
+
     """
 
 
     msg = EmailMessage()
 
     msg["Subject"] = (
-        "🎸 New Firefly Guitar Added!"
+        "🎸 Firefly Guitar Alert"
     )
 
     msg["From"] = EMAIL_ADDRESS
+
     msg["To"] = TO_EMAIL
 
 
     msg.set_content(
-        "New Firefly guitar detected."
+        "A new Firefly guitar event was detected."
     )
 
 
@@ -78,12 +84,12 @@ def send_email(products):
     )
 
 
-    with smtplib.SMTP(
-        "smtp.gmail.com",
-        587
-    ) as server:
+    # Yahoo SMTP settings
 
-        server.starttls()
+    with smtplib.SMTP_SSL(
+        "smtp.mail.yahoo.com",
+        465
+    ) as server:
 
         server.login(
             EMAIL_ADDRESS,
